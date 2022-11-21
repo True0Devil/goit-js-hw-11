@@ -34,10 +34,10 @@ body {
 }
 
 .search-form button:hover {
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.06),
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.06),
     1px 4px 6px rgba(0, 0, 0, 0.16);
 
-    background-color: #188ce8;
+  background-color: #188ce8;
 }
 
 .gallery {
@@ -87,4 +87,41 @@ p {
 
 .info-item:not(:last-child) {
   margin-right: 15px;
+}
+
+/* .gallery a {
+    font-size: 12px;
+} */
+
+.load-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px; */
+  margin: 40px auto;
+  height: 40px;
+  width: 140px;
+  padding: 20px;
+  cursor: pointer;
+  /* text-align: center; */
+
+  background-color: #2196f3;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.load-more[disabled] {
+  display: none;
+}
+
+.load-more:hover {
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.06),
+    1px 4px 6px rgba(0, 0, 0, 0.16);
+
+  background-color: #188ce8;
 }

@@ -2,7 +2,6 @@ import PixabayAPI from './js/pixabayAPI';
 import { Notify } from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import axios from 'axios';
 
 const params = {
   key: '31452557-3b0cbe15b30db98d6cb3606a9',
@@ -13,13 +12,6 @@ const params = {
   BASE_URL: 'https://pixabay.com/api/',
 };
 
-const lightbox = new SimpleLightbox('.photo-card a', {
-  captions: true,
-  captionPosition: 'bottom',
-  captionDelay: 250,
-  captionsData: 'alt',
-});
-
 const imgService = new PixabayAPI(params);
 
 const refs = {
@@ -28,12 +20,18 @@ const refs = {
   loadMoreBtn: document.querySelector('.load-more'),
 };
 
+refs.loadMoreBtn.disabled = 'disabled';
+
+const lightbox = new SimpleLightbox('.gallery a');
+
 refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', createImages);
-refs.gallery.addEventListener('click', e => {
+refs.gallery.addEventListener('click', onGalleryClick);
+
+function onGalleryClick(e) {
   e.preventDefault();
   lightbox.open();
-});
+}
 
 function onFormSubmit(e) {
   e.preventDefault();
@@ -44,6 +42,7 @@ function onFormSubmit(e) {
   imgService.resetPage();
 
   createImages();
+  refs.loadMoreBtn.disabled = null;
 }
 
 function createMarkup(images) {
@@ -83,7 +82,13 @@ async function createImages() {
     );
     return;
   }
-  Notify.success(`Hooray! We found ${images.data.totalHits} images.`);
+
   const markup = await createMarkup(images.data.hits);
   refs.gallery.insertAdjacentHTML('beforeend', markup);
+
+  if (refs.gallery.children.length === images.data.totalHits) {
+    Notify.info(`We're sorry, but you've reached the end of search results.`);
+  } else {
+    Notify.success(`Hooray! We found ${images.data.totalHits} images.`);
+  }
 }
