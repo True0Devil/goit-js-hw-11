@@ -12,12 +12,12 @@ export default class PixabayAPI {
     this.BASE_URL = BASE_URL;
   }
 
-  fetchImages() {
-    return axios
-      .get(
-        `${this.BASE_URL}?key=${this.key}&q=${this.q}&image_type=${this.imageType}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.perPage}`
-      )
-      .then(this.incrementPage());
+  async fetchImages() {
+    const images = await axios.get(
+      `${this.BASE_URL}?key=${this.key}&q=${this.q}&image_type=${this.imageType}&orientation=${this.orientation}&safesearch=${this.safesearch}&page=${this.page}&per_page=${this.perPage}`
+    );
+    this.incrementPage();
+    return images;
   }
 
   incrementPage() {

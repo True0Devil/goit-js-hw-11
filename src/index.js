@@ -1,5 +1,7 @@
 import PixabayAPI from './js/pixabayAPI';
-import Notiflix from 'notiflix';
+import { Notify } from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import axios from 'axios';
 
 const params = {
@@ -11,7 +13,14 @@ const params = {
   BASE_URL: 'https://pixabay.com/api/',
 };
 
-const PixabayServiceAPI = new PixabayAPI(params);
+const lightbox = new SimpleLightbox('.photo-card a', {
+  captions: true,
+  captionPosition: 'bottom',
+  captionDelay: 250,
+  captionsData: 'alt',
+});
+
+const imgService = new PixabayAPI(params);
 
 const refs = {
   form: document.getElementById('search-form'),
@@ -21,13 +30,18 @@ const refs = {
 
 refs.form.addEventListener('submit', onFormSubmit);
 refs.loadMoreBtn.addEventListener('click', createImages);
+refs.gallery.addEventListener('click', e => {
+  e.preventDefault();
+  lightbox.open();
+});
 
 function onFormSubmit(e) {
   e.preventDefault();
-  PixabayServiceAPI.q = e.currentTarget.elements.searchQuery.value;
+  imgService.q = e.currentTarget.elements.searchQuery.value;
+  e.currentTarget.elements.searchQuery.value = '';
 
   clearGallery();
-  PixabayServiceAPI.resetPage();
+  imgService.resetPage();
 
   createImages();
 }
@@ -36,7 +50,7 @@ function createMarkup(images) {
   return images
     .map(
       image => `<div class="photo-card">
-  <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
+  <a href="${image.largeImageURL}"><img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" /></a>
   <div class="info">
     <p class="info-item">
       <b>Likes:</b><br> ${image.likes}
@@ -60,14 +74,16 @@ function clearGallery() {
   refs.gallery.innerHTML = '';
 }
 
-// function createImages() {
-//   PixabayServiceAPI.fetchImages().then(images => createMarkup(images.data.hits))
-//     .then(markup => refs.gallery.insertAdjacentHTML('beforeend', markup));
-// }
-
 async function createImages() {
-  const images = await PixabayServiceAPI.fetchImages();
-  Notiflix.Notify.success(`Hooray! We found ${images.data.total} images.`);
+  const images = await imgService.fetchImages();
+
+  if (images.data.totalHits === 0) {
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+    return;
+  }
+  Notify.success(`Hooray! We found ${images.data.totalHits} images.`);
   const markup = await createMarkup(images.data.hits);
   refs.gallery.insertAdjacentHTML('beforeend', markup);
 }
