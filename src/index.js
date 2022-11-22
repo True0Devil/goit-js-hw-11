@@ -85,6 +85,7 @@ async function createImages() {
 
   const markup = await createMarkup(images.data.hits);
   refs.gallery.insertAdjacentHTML('beforeend', markup);
+  lightbox.refresh();
 
   if (refs.gallery.children.length === images.data.totalHits) {
     Notify.info(`We're sorry, but you've reached the end of search results.`);
