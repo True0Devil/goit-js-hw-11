@@ -17,20 +17,22 @@ const imgService = new PixabayAPI(params);
 const refs = {
   form: document.getElementById('search-form'),
   gallery: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('.load-more'),
 };
-
-refs.loadMoreBtn.disabled = 'disabled';
 
 const lightbox = new SimpleLightbox('.gallery a');
 
 refs.form.addEventListener('submit', onFormSubmit);
-refs.loadMoreBtn.addEventListener('click', createImages);
 refs.gallery.addEventListener('click', onGalleryClick);
+window.addEventListener('scroll', () => {
+  const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+
+  if (scrollHeight - clientHeight === scrollTop) {
+    createImages();
+  }
+})
 
 function onGalleryClick(e) {
   e.preventDefault();
-  lightbox.open();
 }
 
 function onFormSubmit(e) {
@@ -42,7 +44,6 @@ function onFormSubmit(e) {
   imgService.resetPage();
 
   createImages();
-  refs.loadMoreBtn.disabled = null;
 }
 
 function createMarkup(images) {
